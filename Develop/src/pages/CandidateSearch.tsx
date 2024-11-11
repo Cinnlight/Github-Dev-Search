@@ -1,36 +1,52 @@
 import { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaArrowLeft, FaArrowRight, FaTrash, FaUserPlus } from 'react-icons/fa';
 import { GithubUser } from '../interfaces/Candidate.interface';
-import { searchGithub } from '../api/API';
+import { searchGithub, searchGithubUser } from '../api/API';
 
 const CandidateSearch: React.FC = () => {
   const [users, setUsers] = useState<GithubUser[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [detailedUser, setDetailedUser] = useState<GithubUser | null>(null);
 
+  // Fetch the list of users on initial mount
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
-    try {
-      const fetchedUsers = await searchGithub();
-      if (fetchedUsers.length > 0) {
-        setUsers(fetchedUsers);
-        localStorage.setItem('users', JSON.stringify(fetchedUsers));
-      } 
-    } catch (err) {
+      try {
+        const fetchedUsers = await searchGithub();
+        if (fetchedUsers.length > 0) {
+          setUsers(fetchedUsers);
+          localStorage.setItem('users', JSON.stringify(fetchedUsers));
+        }
+      } catch (err) {
         console.error('Error fetching users:', err);
-    } finally {
-      setLoading(false);
-    }
+      } finally {
+        setLoading(false);
+      }
     };
     fetchUsers();
   }, []);
 
+  // Fetch detailed information for the current user whenever `currentIndex` changes
+  useEffect(() => {
+    if (users[currentIndex]) {
+      const fetchDetailedUser = async () => {
+        const userDetail = await searchGithubUser(users[currentIndex].login);
+        setDetailedUser(userDetail);
+        console.log(userDetail);
+      };
+      fetchDetailedUser();
+    }
+  }, [currentIndex, users]);
 
   const handleRemoveUser = (username: string) => {
     const updatedUsers = users.filter(user => user.login !== username);
     setUsers(updatedUsers);
     localStorage.setItem('users', JSON.stringify(updatedUsers));
 
+    // Update currentIndex if needed
     if (currentIndex >= updatedUsers.length) {
       setCurrentIndex(updatedUsers.length - 1);
     }
@@ -43,7 +59,7 @@ const CandidateSearch: React.FC = () => {
     localStorage.setItem('potentialCandidates', JSON.stringify(potentialCandidates));
 
     handleRemoveUser(user.login);
-  }
+  };
 
   const handleNextUser = () => {
     if (users.length > 0) {
@@ -58,19 +74,53 @@ const CandidateSearch: React.FC = () => {
   };
 
   return (
-    <div>
-      {loading ? ( 
+    <div className="d-flex justify-content-center">
+      {loading ? (
         <p>Loading...</p>
-       ) : users.length > 0 && users[currentIndex] ? (
-        <div key={users[currentIndex].id}>
-          <h3>{users[currentIndex].login}</h3>
-          <img src={users[currentIndex].avatar_url} alt={`${users[currentIndex].login}'s avatar`} width="100" />
-          <p>{users[currentIndex].company || 'Company info not available'}</p>
-          <p>{users[currentIndex].bio || 'Bio not available'}</p>
-            <button onClick={() => { addToPotentialCandidates(users[currentIndex]); handleNextUser(); }}>Add to Potential Candidates</button>
-          <button onClick={() => {handleRemoveUser(users[currentIndex].login); handleNextUser();}}>Remove</button>
-          <button onClick={handlePrevUser}>Previous</button>
-          <button onClick={handleNextUser}>Next</button>
+      ) : detailedUser ? (
+        <div key={detailedUser.id} className="card" style={{ width: '18rem' }}>
+          <img
+            src={detailedUser.avatar_url}
+            className="card-img-top"
+            alt={`${detailedUser.login}'s avatar`}
+          />
+          <div className="card-body text-center">
+            <h5 className="card-title">{detailedUser.login}</h5>
+            <p className="card-text">
+              {detailedUser.company || 'Company info not available'}
+            </p>
+            <p className="card-text">
+              {detailedUser.bio || 'Bio not available'}
+            </p>
+            <div className="d-flex justify-content-around mt-3">
+              <button
+                className="btn btn-success"
+                onClick={() => {
+                  addToPotentialCandidates(detailedUser);
+                  handleNextUser();
+                }}
+              >
+                <FaUserPlus />
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  handleRemoveUser(detailedUser.login);
+                  handleNextUser();
+                }}
+              >
+                <FaTrash />
+              </button>
+            </div>
+            <div className="d-flex justify-content-between mt-3">
+              <button className="btn btn-secondary" onClick={handlePrevUser}>
+                <FaArrowLeft />
+              </button>
+              <button className="btn btn-secondary" onClick={handleNextUser}>
+                <FaArrowRight />
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
         <p>No users found</p>
