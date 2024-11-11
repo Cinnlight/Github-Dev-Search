@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Nav = () => {
-  // TODO: Add necessary code to display the navigation bar and link between the pages
   return (
 
     <nav className="navbar navbar-expand-lg navbar-custom">
