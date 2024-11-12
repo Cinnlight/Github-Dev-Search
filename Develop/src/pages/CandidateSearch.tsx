@@ -76,9 +76,9 @@ const CandidateSearch: React.FC = () => {
   return (
     <div className="d-flex justify-content-center">
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-white">Loading...</p>
       ) : detailedUser ? (
-        <div key={detailedUser.id} className="card" style={{ width: '18rem' }}>
+        <div key={detailedUser.id} className="card bg-dark text-white" style={{ width: '18rem' }}>
           <img
             src={detailedUser.avatar_url}
             className="card-img-top"
@@ -113,17 +113,17 @@ const CandidateSearch: React.FC = () => {
               </button>
             </div>
             <div className="d-flex justify-content-between mt-3">
-              <button className="btn btn-secondary" onClick={handlePrevUser}>
+              <button className="btn btn-outline-light" onClick={handlePrevUser}>
                 <FaArrowLeft />
               </button>
-              <button className="btn btn-secondary" onClick={handleNextUser}>
+              <button className="btn btn-outline-light" onClick={handleNextUser}>
                 <FaArrowRight />
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <p>No users found</p>
+        <p className="text-white">No users found</p>
       )}
     </div>
   );
