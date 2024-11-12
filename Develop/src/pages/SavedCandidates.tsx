@@ -8,6 +8,8 @@ import { searchGithubUser } from '../api/API';
 // Page to display saved candidates that are stored in local storage
 const SavedCandidates: React.FC = () => {
   const [potentialCandidates, setPotentialCandidates] = useState<GithubUser[]>([]);
+  const [ hasBio, setHasBio ] = useState<boolean>(false);
+  const [ hasCompany, setHasCompany ] = useState<boolean>(false);
 
   useEffect(() => {
     const storedCandidates = localStorage.getItem('potentialCandidates');
@@ -34,20 +36,55 @@ const SavedCandidates: React.FC = () => {
     localStorage.setItem('potentialCandidates', JSON.stringify(updatedCandidates));
   };
 
+const filteredCandidates = potentialCandidates.filter(candidate => {
+  if (hasBio && !candidate.bio) return false;
+  if (hasCompany && !candidate.company) return false;
+  return true;
+});
+
   return (
     <div className="container my-4">
-      <h1 className="text-center mb-4">Saved Candidates</h1>
-      {potentialCandidates.length > 0 ? (
-        <div className="card">
+      <h1 className="text-center mb-4 text-light">Saved Candidates</h1>
+
+      {/* Checkbox Filters */}
+      <div className="d-flex justify-content-center mb-3">
+        <div className="form-check form-check-inline">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="filterBio"
+            checked={hasBio}
+            onChange={() => setHasBio(!hasBio)}
+          />
+          <label className="form-check-label text-white" htmlFor="filterBio">
+            Show only candidates with bio
+          </label>
+        </div>
+        <div className="form-check form-check-inline">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="filterCompany"
+            checked={hasCompany}
+            onChange={() => setHasCompany(!hasCompany)}
+          />
+          <label className="form-check-label text-white" htmlFor="filterCompany">
+            Show only candidates with company
+          </label>
+        </div>
+      </div>
+
+      {filteredCandidates.length > 0 ? (
+        <div className="card bg-dark text-light">
           <div className="card-body">
             <h5 className="card-title text-center">Candidate List</h5>
             <div className="list-group">
-              {potentialCandidates.map(candidate => {
+              {filteredCandidates.map(candidate => {
                 // Fetch detailed info if needed for each candidate
                 fetchDetailedInfoIfNeeded(candidate);
 
                 return (
-                  <div key={candidate.id} className="list-group-item d-flex align-items-center">
+                  <div key={candidate.id} className="list-group-item d-flex align-items-center bg-dark text-light border-light">
                     <img
                       src={candidate.avatar_url}
                       alt={`${candidate.login}'s avatar`}
@@ -74,7 +111,7 @@ const SavedCandidates: React.FC = () => {
           </div>
         </div>
       ) : (
-        <p className="text-center">No saved candidates found</p>
+        <p className="text-center text-light">No saved candidates found</p>
       )}
     </div>
   );
