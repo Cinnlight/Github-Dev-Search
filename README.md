@@ -1,7 +1,3 @@
-Certainly! Here’s a README file for your GitHub Dev Search project:
-
----
-
 # GitHub Dev Search
 
 GitHub Dev Search is a web application that allows users to browse through GitHub users and save candidates to review later. It integrates with the GitHub API to retrieve user profiles and provides options to filter saved candidates based on profile details, such as whether they have a company or bio listed.
