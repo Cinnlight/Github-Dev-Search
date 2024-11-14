@@ -66,7 +66,3 @@ This app uses the following GitHub API endpoints:
 For any questions or feedback, feel free to reach out!
 
 **Email**: [cinnlight@gmail.com](mailto:cinnlight@gmail.com)
-
----
-
-Feel free to customize this README further based on any additional details you’d like to include!
