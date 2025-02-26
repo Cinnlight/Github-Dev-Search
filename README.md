@@ -24,7 +24,7 @@ GitHub Dev Search is a web application that allows users to browse through GitHu
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/github-dev-search.git
+   git clone https://github.com/cinnlight/github-dev-search.git
    cd github-dev-search
    ```
 
